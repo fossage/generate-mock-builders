@@ -1,11 +1,14 @@
 {
-  "name": "mock-generator",
-  "version": "1.0.0",
+  "name": "generate-mock-builders",
+  "version": "0.1.0",
   "description": "A tool to generate mock data builders from a single set of seed data",
-  "main": "build/main/index.js",
+  "main": "./cli.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/fossage/mock-generator",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fossage/mock-generator.git"
+  },
   "license": "MIT",
   "keywords": [],
   "scripts": {
@@ -24,7 +27,6 @@
     "node": ">=8.9"
   },
   "dependencies": {
-    
     "jest": "^24.9.0",
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.0",
@@ -53,5 +55,10 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/fossage/mock-generator/issues"
+  },
+  "homepage": "https://github.com/fossage/mock-generator#readme",
+  "author": "Justin Foss <jfoss124@gmail.com>"
 }
