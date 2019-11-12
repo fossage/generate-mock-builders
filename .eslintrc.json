@@ -1,0 +1,55 @@
+{
+  "root": true,
+  "env": {
+    "jest": true,
+    "es6": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true,
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "extends": [
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "rules": {
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    "curly": 0,
+    "quotes": 0,
+    "no-undef": "error",
+    "id-length": [
+      "error",
+      {
+        "min": 1,
+        "max": 40
+      }
+    ],
+    "valid-typeof": "error",
+    "no-unreachable": "error",
+    "no-unused-vars": 0,
+    "@typescript-eslint/no-unused-vars": "error",
+    "no-const-assign": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "constructor-super": "error",
+    "no-this-before-super": "error",
+    "class-methods-use-this": 0,
+    "import/no-namespace": 0,
+    "require-atomic-updates": 0,
+    "semi": 0,
+    "no-shadow": 0,
+    "no-extra-semi": 0,
+    "comma-dangle": 0
+  }
+}
