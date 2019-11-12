@@ -1,6 +1,6 @@
 {
   "name": "generate-mock-builders",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A tool to generate mock data builders from a single set of seed data",
   "main": "./cli.js",
   "typings": "build/main/index.d.ts",
@@ -30,7 +30,6 @@
     "node": ">=8.9"
   },
   "dependencies": {
-    "jest": "^24.9.0",
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.0",
     "pluralize": "^8.0.0",
@@ -49,6 +48,7 @@
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-prettier": "^3.1.1",
+    "jest": "^24.9.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2",
     "trash-cli": "^3.0.0",
