@@ -5,6 +5,9 @@
   "main": "./cli.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
+  "bin": {
+    "generate-mock-builders": "./cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fossage/mock-generator.git"
