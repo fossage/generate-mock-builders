@@ -113,14 +113,8 @@ export default class BuilderGenerator {
   }
 
   _getBuilderDef({ valIsArray, builderName, body }) {
-    return `function ${builderName}(${
-      valIsArray ? 'overrides' : 'overrides = {}'
-    }) {
-  ${
-    valIsArray
-      ? `return overrides || ${body}`
-      : `return Object.assign(${body}, overrides)`
-  }
+    return `function ${builderName}(${valIsArray ? '' : 'overrides = {}'}) {
+  ${valIsArray ? `return ${body}` : `return Object.assign(${body}, overrides)`}
 }`;
   }
 

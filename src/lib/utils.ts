@@ -19,12 +19,20 @@ function generateWhitespace(num: number) {
 }
 
 function stringifyPrimitive(primitive: number | null | boolean | string) {
-  return isString(primitive) ? `\`${primitive}\`` : String(primitive);
+  return isString(primitive)
+    ? // escape any single quotes
+      `\'${primitive.replace(/(?<!\\)'/g, "\\'")}\'`
+    : String(primitive);
 }
 
 function getBracesFromStructuredData(data: GenericObject | []) {
   if (isArray(data)) return ['[', ']'];
   return ['{', '}'];
+}
+
+function getStructuredDataLength(data: GenericObject | []) {
+  if (isArray(data)) return data.length;
+  return Object.keys(data).length;
 }
 
 function getValidKey(key: string | number) {
@@ -51,4 +59,5 @@ export {
   stringifyPrimitive,
   getBracesFromStructuredData,
   isStartOrEndOfStructuredData,
+  getStructuredDataLength,
 };

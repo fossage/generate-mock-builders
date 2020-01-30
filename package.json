@@ -21,7 +21,7 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:eslint": "eslint --fix --project .",
-    "test": "run-s build test:*",
+    "test": "node_modules/.bin/jest",
     "watch": "run-p \"build:main -- -w\"",
     "clean": "trash build test",
     "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('mock-generator must be installed with Yarn: https://yarnpkg.com/')\""
@@ -37,10 +37,11 @@
     "request-promise": "^4.2.4"
   },
   "devDependencies": {
-    "@types/request-promise": "^4.1.44",
+    "@types/jest": "^25.1.0",
     "@types/lodash": "^4.14.144",
     "@types/node-fetch": "^2.5.2",
     "@types/pluralize": "0.0.29",
+    "@types/request-promise": "^4.1.44",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.6.1",
     "babel-eslint": "^10.0.3",
@@ -52,6 +53,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2",
     "trash-cli": "^3.0.0",
+    "ts-jest": "^25.0.0",
     "typescript": "^3.5.3"
   },
   "config": {

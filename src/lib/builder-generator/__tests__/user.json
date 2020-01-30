@@ -1,0 +1,91 @@
+{
+  "userId": 47,
+  "dateOfBirth": null,
+  "heightInInches": 0.0,
+  "bodyWeightInLbs": 0.0,
+  "email": "person@example.com",
+  "personId": 47,
+  "gender": null,
+  "globalTrackingId": "abc123",
+  "masquerading?": false,
+  "anonymize": null,
+  "firstName": "MyFirstName18",
+  "lastName": "MyLastName18",
+  "displayName": "MyFirstName18 MyLastName18",
+  "unitSystem": null,
+  "showPretrainingQuestionnaire": true,
+  "showPosttrainingQuestionnaire": true,
+  "needsAdsAttribution": true,
+  "hasLimitedAdTracking": false,
+  "profileImage": {
+    "defaultUrl": "http://example/assets/fallback/person/profile_image_default.jpg"
+  },
+  "currentContextToken": "TC-42",
+  "currentCustomPackage": {
+    "id": 20,
+    "ownerType": "Organization",
+    "ownerId": 11,
+    "basePackage": {
+      "id": 45,
+      "appStoreEnabled": null,
+      "playStoreEnabled": null
+    },
+    "features": {
+      "toggles": {
+        "warmUpsToggleAccessOn": true,
+        "conditioningToggleAccessOn": true,
+        "primersToggleAccessOn": true,
+        "finishersToggleAccessOn": true,
+        "saqsToggleAccessOn": true,
+        "customMetricsToggleAccessOn": true,
+        "complianceModeToggleAccessOn": true,
+        "readinessQuestionnaireToggleAccessOn": true,
+        "nutritionCenterToggleAccessOn": true,
+        "editTrainingToggleAccessOn": true
+      }
+    },
+    "paymentServiceIdentifier": null
+  },
+  "organizations": [
+    {
+      "organizationId": 11,
+      "name": "Org Name 11",
+      "primaryText": null,
+      "secondaryText": null,
+      "primaryColor": null,
+      "secondaryColor": null,
+      "tertiaryColor": null,
+      "teamCreateAuthorized": false,
+      "teamsPlayingOn": [],
+      "teamsCoachingOn": [
+        {
+          "defaultLogoImageUrl": "http://example/assets/fallback/organization/logo_image_default.png",
+          "contextType": "TEAM_COACH",
+          "contextToken": "TC-42",
+          "selected?": true,
+          "customPackageId": 20,
+          "videoResourceId": null,
+          "sport": "All-Around Athlete",
+          "sportCode": "athlete_m",
+          "name": "Team Name 10",
+          "participantTerm": "Athlete",
+          "primaryText": null,
+          "secondaryText": null,
+          "programId": null,
+          "workoutWeekId": null,
+          "workoutWeekDayNum": null,
+          "teamId": 10,
+          "complianceMode": false,
+          "heroImage": {
+            "defaultUrl": "http://example/assets/fallback/team/hero_image_default.jpg",
+            "backgroundUrl": "http://example/assets/fallback/team/hero_image_background.jpg"
+          }
+        }
+      ],
+      "selfDirectedTrainingPrograms": []
+    }
+  ],
+  "independentAthlete": {
+    "trainingPrograms": []
+  }
+}
