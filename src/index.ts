@@ -14,6 +14,7 @@ import RequestOrchestrator, {
 type Config = {
   requests: OrchestratorConfig,
   outputDir: string,
+  fileExtension?: '.js' | '.ts',
   outputTransform?: (
     text: string,
     fileName: string
@@ -44,7 +45,7 @@ async function main(config: Config) {
 
       exportLine += '}';
       out += exportLine;
-      const fileName = key + '.js';
+      const fileName = key + (config.fileExtension || '.js');
 
       if (config.outputTransform) {
         out = await config.outputTransform(out, fileName);
