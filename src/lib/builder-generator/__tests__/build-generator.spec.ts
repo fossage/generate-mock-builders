@@ -107,4 +107,35 @@ describe(`the BuildGenerator class`, () => {
     `)
     );
   });
+
+  it(`will handle array names that are singular`, () => {
+    const todos = {
+      thingsToDo: [
+        { type: 'TODO', description: 'get milk' },
+        { type: 'TODO', description: 'get eggs' },
+      ],
+    };
+    const { builders } = new BuildGenerator({ todos });
+
+    expect(unformat(builders.todos.todosThingsToDo.builderDef)).toBe(
+      unformat(`
+      function buildTodosThingsToDo() {
+        return [ buildTodosThingsToDoEntry(), buildTodosThingsToDoEntry({
+          description: 'get eggs',
+        }),]
+      }
+    `)
+    );
+
+    expect(unformat(builders.todos.todosThingsToDoEntry.builderDef)).toBe(
+      unformat(`
+    function buildTodosThingsToDoEntry(overrides = {}) {
+      return Object.assign({
+        type: 'TODO',
+        description: 'get milk',
+      }, overrides)
+    }
+    `)
+    );
+  });
 });

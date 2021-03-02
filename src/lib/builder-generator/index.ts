@@ -67,14 +67,17 @@ export default class BuilderGenerator {
           this.builders[rCollection] = {};
         }
 
-        const body = valIsArray
-          ? this._generateBuilders(
-              val,
-              pluralize.singular(resourceName),
-              4,
-              rCollection
-            )
-          : this._generateBuilders(val, resourceName, 4, rCollection);
+        const body = (() => {
+          if (valIsArray) {
+            const entryName = pluralize.isPlural(resourceName)
+              ? pluralize.singular(resourceName)
+              : `${resourceName}Entry`;
+
+            return this._generateBuilders(val, entryName, 4, rCollection);
+          } else {
+            return this._generateBuilders(val, resourceName, 4, rCollection);
+          }
+        })();
 
         const builderExisits = !!this.builders[rCollection][resourceName];
 
