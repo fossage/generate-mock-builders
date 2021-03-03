@@ -1,6 +1,6 @@
 {
   "name": "generate-mock-builders",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A tool to generate mock data builders from a single set of seed data",
   "main": "./cli.js",
   "typings": "build/main/index.d.ts",
