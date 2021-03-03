@@ -1,6 +1,6 @@
 {
   "name": "generate-mock-builders",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A tool to generate mock data builders from a single set of seed data",
   "main": "./cli.js",
   "typings": "build/main/index.d.ts",
@@ -62,8 +62,8 @@
     }
   },
   "bugs": {
-    "url": "https://github.com/fossage/mock-generator/issues"
+    "url": "https://github.com/fossage/generate-mock-builders/issues"
   },
-  "homepage": "https://github.com/fossage/mock-generator#readme",
+  "homepage": "https://github.com/fossage/generate-mock-builders#readme",
   "author": "Justin Foss <jfoss124@gmail.com>"
 }
