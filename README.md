@@ -158,3 +158,5 @@ module.exports = {
   },
 }
 ```
+
+Lastly, to run it you need to run either `yarn generate-mock-builders` or `npm run generate-mock-builders`.
