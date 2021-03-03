@@ -2,11 +2,15 @@
 
 ## Installation
 
-> yarn add -D generate-mock-builders
+```bash
+yarn add -D generate-mock-builders
+```
 
 or
 
-> npm i -d generate-mock-builders
+``` bash
+npm i -d generate-mock-builders
+```
 
 ## What is it?
 This library generates mock data builder functions from JSON api responses. The idea is that you can configure the tool to make a request or series of requests to an api, then the tool will parse the responses and generate builder functions for each response as well as any sub-pieces of structured data in the response. The goal of each builder function is to set you up with some defaults and allow you to override specific properties where necessary.
@@ -31,19 +35,19 @@ function buildUser(overrides = {}) {
   return Object.assign({
     firstName: 'John',
     lastName: 'Doe',
-    pets: buildPets()
+    pets: buildUserPets()
   }, overrides)
 }
 
-function buildPets() {
+function buildUserPets() {
   return [
-    buildPet(), 
-    buildPet({name:'Steve', age: 6}),
-    buildPet({name:'Dave', type: 'snake', age: 2})
+    buildUserPet(), 
+    buildUserPet({name:'Steve', age: 6}),
+    buildUserPet({name:'Dave', type: 'snake', age: 2})
   ]
 }
 
-function buildPet(overrides = {}) {
+function buildUserPet(overrides = {}) {
   return Object.assign({ 
     name: 'Fluffy', 
     type: 'dog', 
@@ -159,4 +163,12 @@ module.exports = {
 }
 ```
 
-Lastly, to run it you need to run either `yarn generate-mock-builders` or `npm run generate-mock-builders`.
+Lastly, to run it you need to run either:
+```bash
+yarn generate-mock-builders
+``` 
+or 
+
+```bash
+npm run generate-mock-builders
+```
