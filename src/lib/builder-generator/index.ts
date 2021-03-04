@@ -52,7 +52,7 @@ export default class BuilderGenerator {
       const topLevelBuilder = resource[topLevelKey];
       const body: GenericObject = topLevelBuilder.defaultVal;
       const result = await quicktypeJSON(
-        'typescript',
+        this._options.includeTypes,
         topLevelKey,
         JSON.stringify(body)
       );
@@ -82,12 +82,35 @@ export default class BuilderGenerator {
       dataCollection
     );
 
+    /**
+     * ===== output =====
+     * array: [
+     *
+     * object: {
+     */
     output += openingBrace;
 
     each(dataCollection, (val: DataCollectionValue, key: string | number) => {
+      /**
+       * ===== output =====
+       * array: [
+       * ••
+       *
+       * object: {
+       * ••
+       */
       output += `\n${indent}`;
+
+      /**
+       * ===== output =====
+       * array: [
+       * ••
+       *
+       * object: {
+       * ••key:
+       */
       output += !collectionIsArray ? `${getValidKey(key)}: ` : '';
-      const rCollection = rootCollection || key;
+      const topLevelCollection = rootCollection || key;
 
       if (isStructuredData(val)) {
         const valIsArray = isArray(val);
@@ -101,8 +124,8 @@ export default class BuilderGenerator {
         // We sort the object to make it easier to diff as we simply compare lines
         if (!valIsArray) val = this._sortObject(val);
 
-        if (!this.builders[rCollection]) {
-          this.builders[rCollection] = {};
+        if (!this.builders[topLevelCollection]) {
+          this.builders[topLevelCollection] = {};
         }
 
         const body = (() => {
@@ -111,24 +134,43 @@ export default class BuilderGenerator {
               ? pluralize.singular(resourceName)
               : `${resourceName}Entry`;
 
-            return this._generateBuilders(val, entryName, 4, rCollection, key);
+            return this._generateBuilders(
+              val,
+              entryName,
+              4,
+              topLevelCollection,
+              key
+            );
           } else {
             return this._generateBuilders(
               val,
               resourceName,
               4,
-              rCollection,
+              topLevelCollection,
               key
             );
           }
         })();
 
-        const builderExisits = !!this.builders[rCollection][resourceName];
+        const builderExisits = !!this.builders[topLevelCollection][
+          resourceName
+        ];
 
         const defaultBody = builderExisits
-          ? this.builders[rCollection][resourceName].defaultBody
+          ? this.builders[topLevelCollection][resourceName].defaultBody
           : body;
 
+        // These will be used as args to a builder function in the case of an object,
+        // but will simply be assigned directly to the key in the case of an array
+        /**
+         * ===== builderArgs =====
+         * array: [
+         * ••buildThing(),
+         * ••buildThing({override: 'foo'}),
+         * ]
+         *
+         * object: {override: 'foo'}
+         */
         const builderArgs = this._diff({
           braces,
           newBody: body,
@@ -140,13 +182,40 @@ export default class BuilderGenerator {
           // builderArgs will be empty if it is the first item in the array since
           // that is what we base our default body off of. In this case, just use the
           // default body.
+
+          /**
+           * ===== output =====
+           * array: [
+           * ••[
+           * ••••buildThing(),
+           * ••••buildThing({
+           * ••••••override: 'foo'
+           * ••••}),
+           * ••]
+           *
+           * object: {
+           * ••key: [
+           * ••••buildThing(),
+           * ••••buildThing({
+           * ••••••override: 'foo'
+           * ••••}),
+           * ••]
+           */
           output += builderArgs || defaultBody;
         } else {
+          /**
+           * ===== output =====
+           * object: {
+           * ••key: buildThing()
+           *
+           * array: [
+           * ••buildeThing()
+           */
           output += `${builderName}(${builderArgs})`;
         }
 
         if (!builderExisits) {
-          this.builders[rCollection][resourceName] = {
+          this.builders[topLevelCollection][resourceName] = {
             builderName,
             defaultVal: val,
             defaultBody: body,
@@ -163,12 +232,46 @@ export default class BuilderGenerator {
           };
         }
       } else {
+        /**
+         * ===== output =====
+         * array: [
+         * ••'foo'
+         *
+         * object: {
+         * ••key:•'foo'
+         */
         output += stringifyPrimitive(val);
       }
 
+      /**
+       * ===== output =====
+       * object: {
+       * ••key: buildThing(),
+       *
+       * array: [
+       * ••buildeThing(),
+       */
       output += ',';
     });
 
+    /**
+     * ===== output =====
+     * object: {
+     * ••key: buildThing(),
+     * ••otherKey: buildOtherThing(),
+     * ••lastKey: 2,
+     * }
+     *
+     * array: [
+     * ••buildeThing(),
+     * ••buildeThing({
+     * ••••override: 'foo'
+     * ••}),
+     * ••buildeThing({
+     * ••••override: 'bar'
+     * ••}),
+     * ]
+     */
     output += `\n${closingBrace}`;
     return output;
   }

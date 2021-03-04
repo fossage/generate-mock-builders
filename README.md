@@ -69,10 +69,15 @@ module.exports = {
   outputDir: './app/builders', 
 
   // The extenstion of the builder files to be written. Note that setting it to '.ts'
-  // merely changes the extension of the written file but does not(currently) generate
-  // any type information.
+  // merely changes the extension of the written file but does not generate
+  // any type information. To generate types, use the 'includeTypes' field.
   //===========================================================================
-  fileExtension: '.js',
+  fileExtension: '.ts',
+
+  // An optional field which, when set will include either Typescript or Flow types
+  // in the output builder files.
+  //===========================================================================
+  includeTypes: 'typescript' // 'typescript' | 'flow'
 
   // An optional transform function which will allow you to transform the output
   // of a given file before writing it to disk. It can be sync or async.
