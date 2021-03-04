@@ -3,5 +3,5 @@
   "jsxBracketSameLine": false,
   "semi": true,
   "singleQuote": true,
-  "parser":"babel"
+  "parser": "babel-ts"
 }

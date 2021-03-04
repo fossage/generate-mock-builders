@@ -8,13 +8,17 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/src/index.ts",
+      "program": "${workspaceFolder}/cli.js",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": ["${workspaceFolder}/build/**/*.js"]
     },
     {
       "name": "Test current file",
-      "type": "node",
+      "type": "pwa-node",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ],
       "request": "launch",
       "program": "${workspaceRoot}/node_modules/jest-cli/bin/jest.js",
       "stopOnEntry": false,

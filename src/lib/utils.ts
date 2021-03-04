@@ -1,5 +1,28 @@
 import { isString, isArray } from 'lodash';
+import {
+  jsonInputForTargetLanguage,
+  InputData,
+  quicktype,
+} from 'quicktype-core';
+
 import { GenericObject } from './types';
+
+async function quicktypeJSON(targetLanguage, typeName, jsonString) {
+  const jsonInput = jsonInputForTargetLanguage(targetLanguage);
+
+  await jsonInput.addSource({
+    name: typeName,
+    samples: [jsonString],
+  });
+
+  const inputData = new InputData();
+  inputData.addInput(jsonInput);
+
+  return await quicktype({
+    inputData,
+    lang: targetLanguage,
+  });
+}
 
 function camelize(sections: (string | number)[]) {
   return String(
@@ -20,8 +43,8 @@ function generateWhitespace(num: number) {
 
 function stringifyPrimitive(primitive: number | null | boolean | string) {
   return isString(primitive)
-    ? // escape any single quotes
-      `\'${primitive.replace(/(?<!\\)'/g, "\\'")}\'`
+    ? // escape any single quotes and newlines/returns
+      `\'${primitive.replace(/(?<!\\)'/g, "\\'").replace(/[\n\r\t]/g, '\\n')}\'`
     : String(primitive);
 }
 
@@ -60,4 +83,5 @@ export {
   getBracesFromStructuredData,
   isStartOrEndOfStructuredData,
   getStructuredDataLength,
+  quicktypeJSON,
 };

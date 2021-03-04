@@ -38,7 +38,13 @@
     "valid-typeof": "error",
     "no-unreachable": "error",
     "no-unused-vars": 0,
-    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_"
+      }
+    ],
     "no-const-assign": "error",
     "no-var": "error",
     "prefer-const": "error",

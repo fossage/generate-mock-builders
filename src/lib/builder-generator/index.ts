@@ -2,11 +2,12 @@
                      IMPORTS / SET UP
 ======================================================*/
 import pluralize from 'pluralize';
-import { isObject, isArray, each } from 'lodash';
+import { isObject, isArray, each, upperFirst, camelCase } from 'lodash';
 
 import {
   camelize,
   getValidKey,
+  quicktypeJSON,
   generateWhitespace,
   stringifyPrimitive,
   getBracesFromStructuredData,
@@ -17,6 +18,10 @@ import { GenericObject } from '../types';
 
 type DataCollectionValue = string | number | null | GenericObject | [];
 
+interface Options {
+  includeTypes?: 'typescript' | 'flow';
+}
+
 // aliasing isObject to avoid confusion about the fact
 // that both isObject({}) === true and isObject([]) === true
 const isStructuredData = isObject;
@@ -26,16 +31,49 @@ const isStructuredData = isObject;
 ======================================================*/
 export default class BuilderGenerator {
   builders: GenericObject = {};
+  _options: Options;
 
-  constructor(seedData: GenericObject) {
+  constructor(seedData: GenericObject, options: Options = {}) {
+    this._options = options;
     this._generateBuilders(seedData);
+  }
+
+  async getBuilders() {
+    if (!this._options.includeTypes) {
+      return this.builders;
+    }
+
+    const keys = Object.keys(this.builders);
+
+    for (const key of keys) {
+      const resource = this.builders[key];
+      const resourceKeys = Object.keys(resource);
+      const topLevelKey = resourceKeys[resourceKeys.length - 1];
+      const topLevelBuilder = resource[topLevelKey];
+      const body: GenericObject = topLevelBuilder.defaultVal;
+      const result = await quicktypeJSON(
+        'typescript',
+        topLevelKey,
+        JSON.stringify(body)
+      );
+
+      const types = result.lines
+        .join('\n')
+        .split('// match the expected interface, even if the JSON is valid.')[1]
+        .split('// Converts JSON strings to/from your types')[0];
+
+      resource.__types = types;
+    }
+
+    return this.builders;
   }
 
   _generateBuilders(
     dataCollection: GenericObject | any[],
     keyPrefix = '',
     spaces = 2,
-    rootCollection = null
+    rootCollection = null,
+    parentKey: string | number = ''
   ) {
     let output = '';
     const indent = generateWhitespace(spaces);
@@ -73,9 +111,15 @@ export default class BuilderGenerator {
               ? pluralize.singular(resourceName)
               : `${resourceName}Entry`;
 
-            return this._generateBuilders(val, entryName, 4, rCollection);
+            return this._generateBuilders(val, entryName, 4, rCollection, key);
           } else {
-            return this._generateBuilders(val, resourceName, 4, rCollection);
+            return this._generateBuilders(
+              val,
+              resourceName,
+              4,
+              rCollection,
+              key
+            );
           }
         })();
 
@@ -85,12 +129,21 @@ export default class BuilderGenerator {
           ? this.builders[rCollection][resourceName].defaultBody
           : body;
 
-        output += `${builderName}(${this._diff({
+        const builderArgs = this._diff({
           braces,
           newBody: body,
           defaultBody,
           indent,
-        })})`;
+        });
+
+        if (valIsArray) {
+          // builderArgs will be empty if it is the first item in the array since
+          // that is what we base our default body off of. In this case, just use the
+          // default body.
+          output += builderArgs || defaultBody;
+        } else {
+          output += `${builderName}(${builderArgs})`;
+        }
 
         if (!builderExisits) {
           this.builders[rCollection][resourceName] = {
@@ -101,6 +154,11 @@ export default class BuilderGenerator {
               body,
               valIsArray,
               builderName,
+              typeName: this._getTypeName({
+                collectionIsArray,
+                itemKey: key,
+                parentKey,
+              }),
             }),
           };
         }
@@ -115,8 +173,31 @@ export default class BuilderGenerator {
     return output;
   }
 
-  _getBuilderDef({ valIsArray, builderName, body }) {
-    return `function ${builderName}(${valIsArray ? '' : 'overrides = {}'}) {
+  _getTypeName({ collectionIsArray, itemKey, parentKey }) {
+    // We do not include the entire path for the type name to(hopefully)
+    // correctly sync the name with that returned by quicktype. For array items
+    // we use the singularized version of the name of the parent array.
+    return upperFirst(
+      camelCase(
+        String(
+          collectionIsArray ? pluralize.singular(String(parentKey)) : itemKey
+        )
+      )
+    );
+  }
+
+  _getBuilderDef({ valIsArray, builderName, body, typeName }) {
+    const { includeTypes } = this._options;
+
+    const typeArg = (() => {
+      if (!includeTypes) return '';
+      const utilName = includeTypes === 'typescript' ? 'Partial' : '$Shape';
+      return `:${utilName}<${typeName}>`;
+    })();
+
+    const args = valIsArray ? '' : `overrides${typeArg} = {}`;
+
+    return `function ${builderName}(${args}) {
   ${valIsArray ? `return ${body}` : `return Object.assign(${body}, overrides)`}
 }`;
   }

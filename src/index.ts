@@ -12,6 +12,7 @@ import RequestOrchestrator, {
 } from './lib/request-orchestrator';
 
 type Config = {
+  includeTypes?: 'typescript' | 'flow',
   requests: OrchestratorConfig,
   outputDir: string,
   fileExtension?: '.js' | '.ts',
@@ -29,7 +30,9 @@ async function main(config: Config) {
     const orchestrator = new RequestOrchestrator(config.requests);
     await orchestrator.run();
 
-    const { builders } = new BuildGenerator(orchestrator._state);
+    const generator = new BuildGenerator(orchestrator._state, config);
+
+    const builders = await generator.getBuilders();
     const outDir = path.join(process.cwd(), config.outputDir);
 
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
@@ -38,7 +41,12 @@ async function main(config: Config) {
       let out = '';
       let exportLine = 'export {\n';
 
-      each(val, builder => {
+      if (val.__types) {
+        out += val.__types;
+      }
+
+      each(val, (builder, nextKey) => {
+        if (nextKey === '__types') return;
         out += builder.builderDef + '\n\n';
         exportLine += `  ${builder.builderName},\n`;
       });

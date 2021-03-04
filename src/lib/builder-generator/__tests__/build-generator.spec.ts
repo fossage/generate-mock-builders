@@ -26,8 +26,10 @@ describe(`the BuildGenerator class`, () => {
     ],
   };
 
-  it('will break each top level entity into sub-enteties', () => {
-    const { builders } = new BuildGenerator({ profile, club });
+  it('will break each top level entity into sub-enteties', async () => {
+    const generator = new BuildGenerator({ profile, club });
+    const builders = await generator.getBuilders();
+
     expect(builders.club).toBeDefined();
     expect(builders.club.club).toBeDefined();
     expect(builders.club.clubMembers).toBeDefined();
@@ -41,8 +43,10 @@ describe(`the BuildGenerator class`, () => {
     expect(builders.profile.profileFriend).toBeDefined();
   });
 
-  it('will generate a builder definition for each sub-entity', () => {
-    const { builders } = new BuildGenerator({ profile, club });
+  it('will generate a builder definition for each sub-entity', async () => {
+    const generator = new BuildGenerator({ profile, club });
+    const builders = await generator.getBuilders();
+
     expect(builders.club.club.builderDef).toBeDefined();
     expect(builders.club.clubMembers.builderDef).toBeDefined();
     expect(builders.club.clubMember.builderDef).toBeDefined();
@@ -56,9 +60,10 @@ describe(`the BuildGenerator class`, () => {
     expect(builders.profile.profileFriend.builderDef).toBeDefined();
   });
 
-  it(`will make each builder definition by composing builder definitions for any sub entities`, () => {
+  it(`will make each builder definition by composing builder definitions for any sub entities`, async () => {
     const data = { foo: 'bar', thing: { baz: 'bat' } };
-    const { builders } = new BuildGenerator({ data });
+    const generator = new BuildGenerator({ data });
+    const builders = await generator.getBuilders();
 
     expect(unformat(builders.data.data.builderDef)).toBe(
       unformat(`
@@ -84,7 +89,7 @@ describe(`the BuildGenerator class`, () => {
 
   it(`will use the first item in a collection of items as a 
   default value and will create any subsequent items by calling 
-  the item builder function only passing in the necessary overrides`, () => {
+  the item builder function only passing in the necessary overrides`, async () => {
     const club = {
       name: 'cool club',
       members: [
@@ -94,7 +99,9 @@ describe(`the BuildGenerator class`, () => {
       ],
     };
 
-    const { builders } = new BuildGenerator({ club });
+    const generator = new BuildGenerator({ club });
+    const builders = await generator.getBuilders();
+
     expect(unformat(builders.club.clubMembers.builderDef)).toBe(
       unformat(`
     function buildClubMembers() {
@@ -108,14 +115,118 @@ describe(`the BuildGenerator class`, () => {
     );
   });
 
-  it(`will handle array names that are singular`, () => {
+  it(`can generate typescript types`, async () => {
+    const club = {
+      name: 'cool club',
+      members: [
+        { name: 'Steve', rank: 'standard' },
+        { name: 'Joe', rank: 'standard' },
+        { name: 'Bob', rank: 'organizer' },
+      ],
+    };
+
+    const generator = new BuildGenerator(
+      { club },
+      { includeTypes: 'typescript' }
+    );
+
+    const builders = await generator.getBuilders();
+
+    expect(unformat(builders.club.__types)).toBe(
+      unformat(`
+      export interface Club {
+        name: string;
+        members: Member[];
+      }
+      
+      export interface Member {
+        name: string;
+        rank: string;
+      }
+    `)
+    );
+
+    expect(unformat(builders.club.club.builderDef)).toBe(
+      unformat(`
+      function buildClub(overrides:Partial<Club> = {}) {
+        return Object.assign({
+          name: 'cool club',
+          members: [
+            buildClubMember(),
+            buildClubMember({
+              name: 'Joe',
+            }),
+            buildClubMember({
+              name: 'Bob',
+              rank: 'organizer',
+            }),
+          ],
+        }, overrides)
+      }
+    `)
+    );
+  });
+
+  it(`can generate flow types`, async () => {
+    const club = {
+      name: 'cool club',
+      members: [
+        { name: 'Steve', rank: 'standard' },
+        { name: 'Joe', rank: 'standard' },
+        { name: 'Bob', rank: 'organizer' },
+      ],
+    };
+
+    const generator = new BuildGenerator({ club }, { includeTypes: 'flow' });
+
+    const builders = await generator.getBuilders();
+
+    expect(unformat(builders.club.__types)).toBe(
+      unformat(`
+      export interface Club {
+        name: string;
+        members: Member[];
+      }
+      
+      export interface Member {
+        name: string;
+        rank: string;
+      }
+    `)
+    );
+
+    expect(unformat(builders.club.club.builderDef)).toBe(
+      unformat(`
+      function buildClub(overrides:$Shape<Club> = {}) {
+        return Object.assign({
+          name: 'cool club',
+          members: [
+            buildClubMember(),
+            buildClubMember({
+              name: 'Joe',
+            }),
+            buildClubMember({
+              name: 'Bob',
+              rank: 'organizer',
+            }),
+          ],
+        }, overrides)
+      }
+    `)
+    );
+  });
+
+  it(`will handle array names that are singular`, async () => {
     const todos = {
       thingsToDo: [
         { type: 'TODO', description: 'get milk' },
         { type: 'TODO', description: 'get eggs' },
       ],
     };
-    const { builders } = new BuildGenerator({ todos });
+
+    const generator = new BuildGenerator({ todos });
+
+    const builders = await generator.getBuilders();
 
     expect(unformat(builders.todos.todosThingsToDo.builderDef)).toBe(
       unformat(`
