@@ -10,3 +10,4 @@ coverage
 *.log
 
 package-lock.json
+generate-mock-builders.config.js
