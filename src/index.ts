@@ -12,14 +12,14 @@ import RequestOrchestrator, {
 } from './lib/request-orchestrator';
 
 type Config = {
-  includeTypes?: 'typescript' | 'flow',
-  requests: OrchestratorConfig,
-  outputDir: string,
-  fileExtension?: '.js' | '.ts',
+  includeTypes?: 'typescript' | 'flow';
+  requests: OrchestratorConfig;
+  outputDir: string;
+  fileExtension?: '.js' | '.ts';
   outputTransform?: (
     text: string,
     fileName: string
-  ) => Promise<string> | string,
+  ) => Promise<string> | string;
 };
 
 /*======================================================
@@ -37,7 +37,12 @@ async function main(config: Config) {
 
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
 
+    const flattenedResources = config.requests.resources.flat();
+
     each(builders, async (val, key) => {
+      const resource = flattenedResources.find((item) => item.name === key);
+      if (resource.write === false) return;
+
       let out = '';
       let exportLine = 'export {\n';
 

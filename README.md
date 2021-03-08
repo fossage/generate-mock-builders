@@ -115,6 +115,12 @@ module.exports = {
           //=================================================================
           name: 'profile',
 
+          // An optional boolean that allows you to specify whether or not you 
+          // want builder files to be written for a particular resource. Defaults
+          // to true.
+          //=================================================================
+          write: false,
+
           // A function that takes in the api object which exposes get, post, put, patch,
           // and delete methods. This is a simple wrapper around the request-promise package
           // https://www.npmjs.com/package/request-promise

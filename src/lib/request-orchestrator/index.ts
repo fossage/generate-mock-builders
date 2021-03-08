@@ -11,6 +11,7 @@ interface Selectors {
 }
 
 interface Resource {
+  write?: boolean;
   name: string;
   request: (
     a: ApiType,
@@ -42,7 +43,7 @@ export default class RequestOrchestrator {
     for (const resourceGroup of config.resources) {
       resourceGroup.forEach(({ selectors }: Resource) => {
         if (!selectors) return;
-        Object.keys(selectors).forEach(key => {
+        Object.keys(selectors).forEach((key) => {
           Object.defineProperty(this._selectors, key, {
             get: () => selectors[key](this._state),
           });
@@ -50,7 +51,7 @@ export default class RequestOrchestrator {
       });
 
       const responses = await Promise.all(
-        resourceGroup.map(group =>
+        resourceGroup.map((group) =>
           group.request(Api, this._state, this._selectors)
         )
       );
